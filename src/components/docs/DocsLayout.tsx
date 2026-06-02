@@ -1,0 +1,15 @@
+import { DocsSidebar } from "@/components/docs/DocsSidebar";
+
+export function DocsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="min-h-screen bg-pixa-black text-pixa-white">
+      <div className="vault-fallback fixed inset-0 opacity-25" />
+      <div className="micro-grid fixed inset-0 opacity-20" />
+      <div className="grain-overlay fixed" />
+      <div className="relative grid lg:grid-cols-[18rem_1fr]">
+        <DocsSidebar />
+        <div className="px-5 py-10 sm:px-8 lg:px-12 lg:py-16">{children}</div>
+      </div>
+    </main>
+  );
+}
