@@ -17,8 +17,10 @@ import {
 } from "lucide-react";
 import { HeroVideo } from "@/components/HeroVideo";
 
-const RELEASE_URL = "https://github.com/soumyacodes007/Pixa/releases/latest";
-const DEMO_URL = "https://youtu.be/VGMRlsP6Tj0?si=tbwh-klI1O8NHYEh";
+const MCP_BUNDLE_URL = "/assets/pixa.mcpb";
+const DEMO_URL = "https://youtu.be/DAMOl6qfrh0?si=RdTpNbjuRsw-HfGm";
+const PRODUCT_DEMO_EMBED_URL =
+  "https://www.youtube-nocookie.com/embed/DAMOl6qfrh0?autoplay=1&mute=1&loop=1&playlist=DAMOl6qfrh0&controls=0&modestbranding=1&rel=0&playsinline=1";
 
 const metrics = [
   ["Network", "Algorand Mainnet"],
@@ -28,13 +30,12 @@ const metrics = [
 ];
 
 const flow = [
-  "Request",
-  "402",
-  "Budget",
-  "Authorize",
-  "Confirm",
-  "Retry",
-  "Result",
+  ["01", "Request", "Agent reaches a paid endpoint."],
+  ["02", "402", "Price, recipient, and network return."],
+  ["03", "Guard", "Pixa checks budget and policy."],
+  ["04", "Authorize", "USDC payment signs on Algorand."],
+  ["05", "Settle", "Finality confirms in seconds."],
+  ["06", "Unlock", "The resource returns to the agent."],
 ];
 
 const modes = [
@@ -63,9 +64,12 @@ const roadmap = [
   ["Future", "Non-custodial treasury and multi-chain routing."],
 ];
 
+type FixedXMode = "hidden" | "origin" | "settled";
+
 export function LandingPage() {
   const reduceMotion = useReducedMotion();
   const [heroVisible, setHeroVisible] = useState(false);
+  const [fixedXMode, setFixedXMode] = useState<FixedXMode>("hidden");
 
   useEffect(() => {
     if (reduceMotion) {
@@ -89,8 +93,71 @@ export function LandingPage() {
     };
   }, [heroVisible]);
 
+  useEffect(() => {
+    if (!heroVisible) {
+      return;
+    }
+
+    function updateFixedX() {
+      const viewportHeight = window.innerHeight;
+      const getSectionBounds = (sectionId: string) => {
+        const section = document.getElementById(sectionId);
+
+        return section?.getBoundingClientRect();
+      };
+
+      const sectionIsActive = (sectionId: string) => {
+        const bounds = getSectionBounds(sectionId);
+
+        return Boolean(
+          bounds &&
+            bounds.top < viewportHeight * 0.82 &&
+            bounds.bottom > viewportHeight * 0.16,
+        );
+      };
+      const toolsBounds = getSectionBounds("tools-panel");
+      const roadmapBounds = getSectionBounds("roadmap");
+      const toolsThroughRoadmap = Boolean(
+        toolsBounds &&
+          roadmapBounds &&
+          toolsBounds.top < viewportHeight * 0.82 &&
+          roadmapBounds.bottom > viewportHeight * 0.16,
+      );
+
+      if (toolsThroughRoadmap) {
+        setFixedXMode("settled");
+        return;
+      }
+
+      if (
+        sectionIsActive("product") &&
+        window.scrollY > viewportHeight * 0.72
+      ) {
+        setFixedXMode("origin");
+        return;
+      }
+
+      setFixedXMode("hidden");
+    }
+
+    updateFixedX();
+    window.addEventListener("scroll", updateFixedX, { passive: true });
+    window.addEventListener("resize", updateFixedX);
+
+    return () => {
+      window.removeEventListener("scroll", updateFixedX);
+      window.removeEventListener("resize", updateFixedX);
+    };
+  }, [heroVisible]);
+
   return (
     <main className="bg-pixa-black text-pixa-white">
+      <AnimatePresence>
+        {fixedXMode !== "hidden" ? (
+          <FixedOriginX key={fixedXMode} mode={fixedXMode} />
+        ) : null}
+      </AnimatePresence>
+
       <section className="relative min-h-screen overflow-hidden bg-pixa-black">
         <HeroVideo
           shouldPlay={reduceMotion !== true}
@@ -163,7 +230,7 @@ export function LandingPage() {
                 >
                   PIXA
                 </motion.div>
-                <div className="edge-frame relative max-w-5xl px-5 py-7 sm:px-9 sm:py-9">
+                <div className="edge-frame relative max-w-5xl -translate-y-8 px-5 py-7 sm:-translate-y-12 sm:px-9 sm:py-9">
                   <motion.p
                     className="section-kicker"
                     initial={{ opacity: 0, y: 14 }}
@@ -196,9 +263,8 @@ export function LandingPage() {
                     transition={{ delay: 0.58, duration: 0.8 }}
                   >
                     <a
-                      href={RELEASE_URL}
-                      target="_blank"
-                      rel="noreferrer"
+                      href={MCP_BUNDLE_URL}
+                      download
                       className="chrome-button inline-flex h-14 items-center justify-center gap-3 rounded-sm px-7 text-sm font-medium uppercase transition duration-500 ease-cinematic focus:outline-none focus:ring-2 focus:ring-white/40"
                     >
                       Download MCP Bundle
@@ -253,10 +319,10 @@ export function LandingPage() {
               viewport={{ once: true, margin: "-120px" }}
               transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="outline-text display-type absolute -right-4 bottom-0 text-9xl leading-none opacity-50">
+              <div className="outline-text display-type pointer-events-none absolute -right-4 bottom-0 text-9xl leading-none opacity-50">
                 MCP
               </div>
-              <div className="relative grid gap-3 sm:grid-cols-2">
+              <div className="relative z-10 grid gap-3 sm:grid-cols-2">
                 {metrics.map(([label, value]) => (
                   <div key={label} className="border border-white/10 p-5">
                     <p className="text-xs uppercase text-pixa-muted">{label}</p>
@@ -266,6 +332,29 @@ export function LandingPage() {
                   </div>
                 ))}
               </div>
+              <div className="relative z-10 mt-3 hidden overflow-hidden border border-white/10 bg-pixa-black/80 shadow-silver lg:block">
+                <div className="absolute inset-x-0 top-0 z-10 h-px silver-line opacity-70" />
+                <div className="relative aspect-video">
+                  <iframe
+                    className="h-full w-full scale-[1.02] opacity-70 grayscale contrast-125 saturate-0"
+                    src={PRODUCT_DEMO_EMBED_URL}
+                    title="Pixa Wallet demo"
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allow="autoplay; encrypted-media; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,transparent,rgba(3,3,3,0.26)_55%,#030303_100%)]" />
+                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_18%,transparent_74%,rgba(3,3,3,0.74))]" />
+                  <div className="outline-text display-type pointer-events-none absolute bottom-1 left-4 z-10 text-[4.8rem] leading-none opacity-65 mix-blend-screen">
+                    MCP
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-t border-white/10 px-4 py-3 text-[0.68rem] uppercase text-pixa-muted">
+                  <span>Live Demo</span>
+                  <span>Claude / MCP / x402</span>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -273,42 +362,91 @@ export function LandingPage() {
 
       <XLoopSection />
 
-      <section className="relative overflow-hidden bg-pixa-black px-6 py-32 sm:px-8 sm:py-44">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#030303,rgba(255,255,255,0.035),#030303)]" />
+      <section
+        id="x402-flow"
+        className="relative isolate overflow-hidden bg-pixa-black px-6 py-32 sm:px-8 sm:py-44"
+      >
+        <div className="vault-fallback absolute inset-0 opacity-25" />
+        <div className="micro-grid absolute inset-0 opacity-15" />
+        <div className="absolute inset-x-[10%] top-0 h-px silver-line opacity-45" />
         <div className="grain-overlay" />
-        <div className="relative mx-auto max-w-7xl">
-          <p className="section-kicker">x402 Flow</p>
-          <h2 className="chrome-text display-type section-heading mt-6 max-w-5xl text-balance">
-            Request. Pay. Continue.
-          </h2>
-          <div className="mt-14 grid gap-3 lg:grid-cols-7">
-            {flow.map((item, index) => (
-              <motion.div
-                key={item}
-                className="edge-frame relative min-h-36 border border-white/12 bg-white/[0.02] p-5"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{
-                  delay: index * 0.04,
-                  duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              >
-                <span className="display-type text-xs text-pixa-muted">
-                  0{index + 1}
-                </span>
-                <p className="display-type mt-9 text-2xl uppercase leading-tight text-pixa-white">
-                  {item}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+        <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+          <motion.div
+            className="edge-frame px-5 py-8 sm:px-8"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-120px" }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <p className="section-kicker">x402 Flow</p>
+            <h2 className="chrome-text display-type section-heading mt-6 max-w-2xl text-balance">
+              The paywall becomes a protocol handshake.
+            </h2>
+            <p className="section-copy mt-8 max-w-md">
+              Pixa converts HTTP 402 into a budgeted Algorand payment and keeps
+              the agent moving.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="edge-frame relative overflow-hidden border border-white/12 bg-white/[0.025] p-4 shadow-silver sm:p-6"
+            initial={{ opacity: 0, y: 28, filter: "blur(12px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, margin: "-120px" }}
+            transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-white/[0.07] blur-3xl" />
+            <div className="pointer-events-none absolute inset-x-6 top-1/2 hidden h-px silver-line opacity-55 lg:block" />
+            <div className="relative grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {flow.map(([step, title, copy], index) => (
+                <motion.article
+                  key={title}
+                  className="group relative min-h-44 overflow-hidden border border-white/10 bg-pixa-black/70 p-5"
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{
+                    delay: index * 0.05,
+                    duration: 0.72,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                >
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
+                  <p className="display-type text-xs text-pixa-muted">{step}</p>
+                  <h3 className="display-type mt-8 text-2xl uppercase leading-tight text-pixa-white">
+                    {title}
+                  </h3>
+                  <p className="mt-4 text-sm leading-6 text-pixa-secondary">
+                    {copy}
+                  </p>
+                </motion.article>
+              ))}
+            </div>
+            <div className="relative mt-4 grid gap-3 text-[0.68rem] uppercase text-pixa-muted sm:grid-cols-3">
+              <div className="border border-white/10 px-4 py-3">Agent</div>
+              <div className="border border-white/10 px-4 py-3">Pixa MCP</div>
+              <div className="border border-white/10 px-4 py-3">
+                Algorand
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden bg-pixa-black px-6 py-32 sm:px-8 sm:py-44">
-        <div className="vault-fallback absolute inset-0 opacity-30" />
+      <section
+        id="autonomy"
+        className="relative isolate overflow-hidden bg-pixa-black px-6 py-32 sm:px-8 sm:py-44"
+      >
+        <Image
+          src="/assets/pixa-bg2.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.42]"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_48%,transparent,rgba(3,3,3,0.58)_44%,#030303_88%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#030303_0%,rgba(3,3,3,0.78)_24%,rgba(3,3,3,0.36)_54%,#030303_100%)]" />
+        <div className="vault-fallback absolute inset-0 opacity-[0.18] mix-blend-screen" />
         <div className="grain-overlay" />
         <div className="relative mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.88fr_1.12fr]">
           <motion.div
@@ -371,9 +509,8 @@ export function LandingPage() {
               </h2>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <a
-                  href={RELEASE_URL}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={MCP_BUNDLE_URL}
+                  download
                   className="chrome-button inline-flex h-14 items-center justify-center gap-3 rounded-sm px-7 text-sm font-medium uppercase"
                 >
                   Download MCP Bundle
@@ -389,8 +526,21 @@ export function LandingPage() {
               </div>
             </div>
 
-            <div className="edge-frame border border-white/12 bg-white/[0.02] p-6">
-              <pre className="overflow-x-auto text-sm leading-7 text-pixa-secondary">
+            <div className="edge-frame overflow-hidden border border-white/12 bg-white/[0.025] shadow-silver">
+              <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.035] px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-white/35" />
+                  <span className="h-2 w-2 rounded-full bg-white/20" />
+                  <span className="h-2 w-2 rounded-full bg-white/12" />
+                </div>
+                <div className="flex items-center gap-3 text-[0.68rem] uppercase text-pixa-muted">
+                  <span>claude_desktop_config</span>
+                  <span className="border border-white/12 bg-pixa-black/60 px-2 py-1 text-pixa-secondary">
+                    JSON
+                  </span>
+                </div>
+              </div>
+              <pre className="overflow-x-auto px-5 py-6 text-sm leading-7 text-pixa-secondary">
                 <code>{`{
   "mcpServers": {
     "pixa": {
@@ -410,21 +560,61 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden bg-pixa-black px-6 py-32 sm:px-8 sm:py-44">
-        <div className="vault-fallback absolute inset-0 opacity-25" />
+      <section
+        id="tools-panel"
+        className="relative isolate overflow-hidden bg-pixa-black px-6 py-32 sm:px-8 sm:py-44"
+      >
+        <div className="vault-fallback absolute inset-0 opacity-30" />
+        <div className="micro-grid absolute inset-0 opacity-15" />
+        <div className="absolute inset-x-[8%] top-0 h-px silver-line opacity-45" />
         <div className="grain-overlay" />
-        <div className="relative mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
-          <Panel icon={Wallet} title="Tools" items={tools.map(([title]) => title)} />
-          <Panel icon={ShieldCheck} title="Security" items={security} />
-          <Panel
-            icon={Network}
-            title="Why Algorand"
-            items={["Fast finality", "Low fees", "Native USDC", "Atomic rails"]}
-          />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <p className="section-kicker">Capability Surface</p>
+            <div className="hidden h-px flex-1 silver-line opacity-45 lg:block" />
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <Panel
+              icon={Wallet}
+              index="01"
+              title="Tools"
+              items={tools.map(([title]) => title)}
+            />
+            <Panel
+              icon={ShieldCheck}
+              index="02"
+              title="Security"
+              items={security}
+            />
+            <Panel
+              icon={Network}
+              index="03"
+              title="Why Algorand"
+              items={[
+                "Fast finality",
+                "Low fees",
+                "Native USDC",
+                "Atomic rails",
+              ]}
+            />
+          </div>
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-pixa-black px-6 py-32 sm:px-8 sm:py-44">
+      <section
+        id="roadmap"
+        className="relative isolate overflow-hidden bg-pixa-black px-6 pb-16 pt-28 sm:px-8 sm:pb-24 sm:pt-36"
+      >
+        <Image
+          src="/assets/pixa-bg3.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.66]"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_32%,transparent,rgba(3,3,3,0.34)_42%,#030303_90%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,#030303_0%,rgba(3,3,3,0.26)_28%,rgba(3,3,3,0.58)_70%,#030303_100%)]" />
         <div className="grain-overlay" />
         <div className="relative mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
@@ -474,12 +664,15 @@ export function LandingPage() {
 
 function XLoopSection() {
   return (
-    <section className="relative isolate min-h-screen overflow-hidden bg-pixa-black px-6 py-28 sm:px-8 sm:py-40">
+    <section
+      id="pixa-core"
+      className="relative isolate overflow-hidden bg-pixa-black px-6 py-28 sm:px-8 sm:py-40"
+    >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#030303,rgba(255,255,255,0.035),#030303)]" />
       <div className="grain-overlay" />
 
       <video
-        className="absolute inset-0 h-full w-full object-cover opacity-45"
+        className="absolute inset-0 h-full w-full object-cover opacity-35"
         preload="none"
         playsInline
         muted
@@ -488,26 +681,9 @@ function XLoopSection() {
       >
         <source src="/assets/pixa-x-loop.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,transparent,rgba(3,3,3,0.74)_48%,#030303_88%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,transparent,rgba(3,3,3,0.8)_46%,#030303_86%)]" />
 
-      <motion.div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[86vh] w-[86vw] -translate-x-1/2 -translate-y-1/2 opacity-70"
-        initial={{ opacity: 0, scale: 0.78, filter: "blur(18px)" }}
-        whileInView={{ opacity: 0.7, scale: 1, filter: "blur(0px)" }}
-        viewport={{ once: true, margin: "-120px" }}
-        transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <Image
-          src="/assets/x-logo.png"
-          alt=""
-          fill
-          sizes="86vw"
-          className="object-contain drop-shadow-[0_0_120px_rgba(255,255,255,0.28)]"
-        />
-      </motion.div>
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#030303_0%,rgba(3,3,3,0.82)_18%,rgba(3,3,3,0.22)_48%,rgba(3,3,3,0.82)_78%,#030303_100%)]" />
-
-      <div className="relative mx-auto flex min-h-[70vh] max-w-7xl items-center justify-center text-center">
+      <div className="relative mx-auto flex min-h-[68vh] max-w-7xl items-center">
         <motion.div
           className="edge-frame max-w-3xl px-5 py-8 sm:px-8"
           initial={{ opacity: 0, y: 24 }}
@@ -516,10 +692,10 @@ function XLoopSection() {
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           <p className="section-kicker">Pixa Core</p>
-          <h2 className="chrome-text display-type section-heading relative z-10 mx-auto mt-6 max-w-3xl text-balance">
+          <h2 className="chrome-text display-type section-heading relative z-10 mt-6 max-w-3xl text-balance">
             The wallet layer for machine intent.
           </h2>
-          <p className="section-copy relative z-10 mx-auto mt-8 max-w-md">
+          <p className="section-copy relative z-10 mt-8 max-w-md">
             Agents request. Pixa guards. Algorand settles.
           </p>
         </motion.div>
@@ -533,31 +709,120 @@ function XLoopSection() {
   );
 }
 
+function FixedOriginX({ mode }: { mode: Exclude<FixedXMode, "hidden"> }) {
+  const settled = mode === "settled";
+
+  return (
+    <motion.div
+      className="pointer-events-none fixed bottom-[-4rem] right-[-3rem] z-10 h-[14rem] w-[14rem] overflow-hidden opacity-35 sm:bottom-[-5rem] sm:right-[-4rem] sm:h-[20rem] sm:w-[20rem] lg:bottom-[-7rem] lg:right-[-5rem] lg:h-[28rem] lg:w-[28rem]"
+      initial={
+        settled
+          ? {
+              opacity: 0,
+              x: "6vw",
+              y: "18vh",
+              scale: 0.86,
+              rotate: 18,
+              filter: "blur(18px)",
+            }
+          : {
+              opacity: 0,
+              x: "-56vw",
+              y: "-78vh",
+              scale: 0.2,
+              rotate: -120,
+              filter: "blur(20px)",
+            }
+      }
+      animate={{
+        opacity: settled ? 0.28 : 0.34,
+        x: 0,
+        y: 0,
+        scale: 1,
+        rotate: 0,
+        filter: settled ? "blur(4px)" : "blur(3px)",
+      }}
+      exit={
+        settled
+          ? {
+              opacity: 0,
+              x: 0,
+              y: "22vh",
+              scale: 0.92,
+              rotate: 0,
+              filter: "blur(16px)",
+            }
+          : {
+              opacity: 0,
+              x: "8vw",
+              y: "30vh",
+              scale: 0.76,
+              rotate: 24,
+              filter: "blur(18px)",
+            }
+      }
+      transition={{
+        duration: settled ? 0.95 : 1.05,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    >
+      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_58%)] blur-3xl" />
+      <Image
+        src="/assets/x-logo.png"
+        alt=""
+        fill
+        sizes="28rem"
+        className="scale-[2.45] object-contain opacity-75 mix-blend-screen drop-shadow-[0_0_72px_rgba(255,255,255,0.14)]"
+      />
+    </motion.div>
+  );
+}
+
 function Panel({
   icon: Icon,
+  index,
   title,
   items,
 }: {
   icon: LucideIcon;
+  index: string;
   title: string;
   items: string[];
 }) {
   return (
-    <article className="edge-frame min-h-80 border border-white/12 bg-white/[0.02] p-7">
-      <Icon className="h-5 w-5 text-pixa-secondary" aria-hidden />
-      <h3 className="chrome-text display-type mt-7 text-5xl leading-tight">
+    <motion.article
+      className="edge-frame group relative min-h-[28rem] overflow-hidden border border-white/12 bg-white/[0.025] p-7 shadow-silver"
+      initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
+      <div className="outline-text display-type pointer-events-none absolute right-5 top-20 w-28 text-right text-8xl leading-none opacity-40">
+        {index}
+      </div>
+      <div className="relative flex items-center justify-between">
+        <div className="grid h-11 w-11 place-items-center border border-white/12 bg-white/[0.035]">
+          <Icon className="h-5 w-5 text-pixa-secondary" aria-hidden />
+        </div>
+        <span className="min-w-20 text-right text-xs uppercase text-pixa-muted">
+          Pixa / {index}
+        </span>
+      </div>
+      <h3 className="chrome-text display-type relative mt-10 text-5xl leading-tight">
         {title}
       </h3>
-      <div className="mt-8 grid gap-3">
+      <div className="relative mt-10 grid gap-2">
         {items.map((item) => (
           <p
             key={item}
-            className="border-t border-white/10 pt-3 text-sm uppercase text-pixa-secondary"
+            className="flex items-center justify-between border-t border-white/10 pt-3 text-sm uppercase text-pixa-secondary"
           >
-            {item}
+            <span>{item}</span>
+            <span className="h-px w-8 bg-white/18" />
           </p>
         ))}
       </div>
-    </article>
+    </motion.article>
   );
 }

@@ -40,7 +40,8 @@ export function DocsSidebar() {
           ))}
         </nav>
         <a
-          href="https://github.com/soumyacodes007/Pixa/releases/latest"
+          href="/assets/pixa.mcpb"
+          download
           className="chrome-button mt-auto hidden h-12 items-center justify-center rounded-sm px-5 text-xs font-medium uppercase lg:inline-flex"
         >
           Download MCP Bundle

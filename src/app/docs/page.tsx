@@ -71,7 +71,8 @@ export default function DocsPage() {
             Claude Desktop without terminal work.
           </p>
           <a
-            href="https://github.com/soumyacodes007/Pixa/releases/latest"
+            href="/assets/pixa.mcpb"
+            download
             className="chrome-button mt-6 inline-flex h-12 items-center rounded-sm px-6 text-xs font-medium uppercase"
           >
             Download Latest Release

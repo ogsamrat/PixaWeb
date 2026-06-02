@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import { motion } from "framer-motion";
+import { ChevronsDown } from "lucide-react";
 
 type HeroVideoProps = {
   shouldPlay: boolean;
@@ -23,7 +24,7 @@ export function HeroVideo({
   const startedRef = useRef(false);
   const [mounted, setMounted] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [audioBlocked, setAudioBlocked] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const [introEnded, setIntroEnded] = useState(false);
 
   useEffect(() => {
@@ -40,24 +41,19 @@ export function HeroVideo({
       startedRef.current = true;
       revealFiredRef.current = false;
       setFailed(false);
+      setRevealed(false);
       setIntroEnded(false);
       video.currentTime = 0;
-      video.muted = false;
-      video.volume = 1;
+      video.muted = true;
+      video.volume = 0;
 
       try {
         await video.play();
       } catch {
-        try {
-          video.muted = true;
-          video.volume = 0;
-          setAudioBlocked(true);
-          await video.play();
-        } catch {
-          setFailed(true);
-          onDoorReveal();
-          onIntroComplete();
-        }
+        setFailed(true);
+        setRevealed(true);
+        onDoorReveal();
+        onIntroComplete();
       }
     }
 
@@ -68,38 +64,6 @@ export function HeroVideo({
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!audioBlocked) {
-      return;
-    }
-
-    async function unlockAudio() {
-      const video = videoRef.current;
-      if (!video) {
-        return;
-      }
-
-      video.muted = false;
-      video.volume = 1;
-
-      try {
-        await video.play();
-        setAudioBlocked(false);
-      } catch {
-        video.muted = true;
-        video.volume = 0;
-      }
-    }
-
-    document.addEventListener("pointerdown", unlockAudio, { once: true });
-    document.addEventListener("keydown", unlockAudio, { once: true });
-
-    return () => {
-      document.removeEventListener("pointerdown", unlockAudio);
-      document.removeEventListener("keydown", unlockAudio);
-    };
-  }, [audioBlocked]);
-
   function handleTimeUpdate() {
     const video = videoRef.current;
     if (!video || revealFiredRef.current) {
@@ -108,6 +72,7 @@ export function HeroVideo({
 
     if (video.currentTime >= REVEAL_TIME_SECONDS) {
       revealFiredRef.current = true;
+      setRevealed(true);
       onDoorReveal();
     }
   }
@@ -118,8 +83,23 @@ export function HeroVideo({
     onIntroComplete();
   }
 
+  function handleSkip() {
+    const video = videoRef.current;
+
+    if (video) {
+      video.pause();
+    }
+
+    revealFiredRef.current = true;
+    setRevealed(true);
+    setIntroEnded(true);
+    onDoorReveal();
+    onIntroComplete();
+  }
+
   function handleError() {
     setFailed(true);
+    setRevealed(true);
     onDoorReveal();
     onIntroComplete();
   }
@@ -127,7 +107,6 @@ export function HeroVideo({
   return (
     <div
       className="absolute inset-0 overflow-hidden bg-pixa-black"
-      aria-hidden
       suppressHydrationWarning
     >
       <div
@@ -156,6 +135,8 @@ export function HeroVideo({
           )}
           preload="auto"
           playsInline
+          muted
+          aria-hidden
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleEnded}
           onError={handleError}
@@ -178,6 +159,19 @@ export function HeroVideo({
       <div className="light-beam left-[10%] top-[28%]" />
       <div className="cinematic-vignette" />
       <div className="grain-overlay" />
+      {mounted && shouldPlay && !revealed && !introEnded && !failed ? (
+        <motion.button
+          type="button"
+          aria-label="Skip intro"
+          onClick={handleSkip}
+          className="absolute bottom-6 left-1/2 z-20 grid h-10 w-10 -translate-x-1/2 place-items-center rounded-full border border-white/15 bg-black/30 text-pixa-secondary shadow-silver backdrop-blur-md transition duration-500 ease-cinematic hover:border-white/35 hover:bg-white/[0.06] hover:text-pixa-white focus:outline-none focus:ring-2 focus:ring-white/35"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <ChevronsDown className="h-4 w-4" aria-hidden />
+        </motion.button>
+      ) : null}
     </div>
   );
 }
