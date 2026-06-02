@@ -13,7 +13,7 @@
   <img alt="Algorand" src="https://img.shields.io/badge/Algorand-Mainnet-00D4AA?style=for-the-badge&logo=algorand&logoColor=001A14" />
   <img alt="MCP" src="https://img.shields.io/badge/MCP-Native-7C3AED?style=for-the-badge" />
   <img alt="x402" src="https://img.shields.io/badge/x402-Supported-F59E0B?style=for-the-badge" />
-  <img alt="License" src="https://img.shields.io/badge/License-GPL-64748B?style=for-the-badge" />
+  <img alt="License" src="https://img.shields.io/badge/License-GPLv3-64748B?style=for-the-badge" />
 </p>
 
 **A cinematic product website and docs experience for Pixa Wallet.**
@@ -57,4 +57,4 @@ Black metal. Silver light. Sparse copy. Precise motion.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+GPL v3. See [LICENSE](LICENSE).
