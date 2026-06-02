@@ -130,7 +130,7 @@ export function HeroVideo({
         <video
           ref={videoRef}
           className={clsx(
-            "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
+            "absolute inset-x-0 top-2 h-[calc(100%-1rem)] w-full object-cover transition-opacity duration-1000 sm:inset-0 sm:h-full",
             failed || introEnded ? "opacity-0" : "opacity-100",
           )}
           preload="auto"
@@ -164,7 +164,7 @@ export function HeroVideo({
           type="button"
           aria-label="Skip intro"
           onClick={handleSkip}
-          className="absolute bottom-20 left-1/2 z-20 grid h-11 w-11 -translate-x-1/2 place-items-center rounded-full border border-white/15 bg-black/35 text-pixa-secondary shadow-silver backdrop-blur-md transition duration-500 ease-cinematic hover:border-white/35 hover:bg-white/[0.06] hover:text-pixa-white focus:outline-none focus:ring-2 focus:ring-white/35 sm:bottom-6 sm:h-10 sm:w-10"
+          className="absolute inset-x-0 bottom-20 z-20 mx-auto grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/35 text-pixa-secondary shadow-silver backdrop-blur-md transition duration-500 ease-cinematic hover:border-white/35 hover:bg-white/[0.06] hover:text-pixa-white focus:outline-none focus:ring-2 focus:ring-white/35 sm:bottom-6 sm:h-10 sm:w-10"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
