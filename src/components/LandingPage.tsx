@@ -18,7 +18,7 @@ import {
 import { HeroVideo } from "@/components/HeroVideo";
 
 const MCP_BUNDLE_URL = "/assets/pixa.mcpb";
-const DEMO_URL = "https://youtu.be/DAMOl6qfrh0?si=RdTpNbjuRsw-HfGm";
+const DEMO_URL = "https://youtu.be/DAMOl6qfrh0";
 const PRODUCT_DEMO_EMBED_URL =
   "https://www.youtube-nocookie.com/embed/DAMOl6qfrh0?autoplay=1&mute=1&loop=1&playlist=DAMOl6qfrh0&controls=0&modestbranding=1&rel=0&playsinline=1";
 
