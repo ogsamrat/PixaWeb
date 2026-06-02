@@ -130,7 +130,7 @@ export function HeroVideo({
         <video
           ref={videoRef}
           className={clsx(
-            "absolute inset-0 h-full w-full scale-[0.94] object-contain transition-opacity duration-1000 sm:scale-100 sm:object-cover",
+            "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
             failed || introEnded ? "opacity-0" : "opacity-100",
           )}
           preload="auto"
