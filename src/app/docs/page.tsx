@@ -185,6 +185,36 @@ export default function DocsPage() {
             ]}
           />
         </DocsSection>
+
+        <DocsSection id="repositories" title="Repositories" kicker="Source">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              [
+                "Pixa Wallet",
+                "soumyacodes007/Pixa",
+                "https://github.com/soumyacodes007/Pixa",
+              ],
+              [
+                "Pixa Website",
+                "ogsamrat/PixaWeb",
+                "https://github.com/ogsamrat/PixaWeb/",
+              ],
+            ].map(([label, repo, href]) => (
+              <a
+                key={repo}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                className="edge-frame block border border-white/12 bg-white/[0.02] p-5 transition duration-500 ease-cinematic hover:border-white/28 hover:bg-white/[0.045]"
+              >
+                <p className="section-kicker">{label}</p>
+                <p className="mt-4 break-words font-mono text-sm leading-7 text-pixa-white">
+                  {repo}
+                </p>
+              </a>
+            ))}
+          </div>
+        </DocsSection>
       </article>
     </DocsLayout>
   );

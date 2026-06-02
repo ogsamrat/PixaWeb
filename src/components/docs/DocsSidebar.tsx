@@ -11,6 +11,7 @@ const nav = [
   ["Live Demo", "#live-demo"],
   ["Security", "#security"],
   ["Algorand", "#algorand"],
+  ["Repositories", "#repositories"],
 ];
 
 export function DocsSidebar() {

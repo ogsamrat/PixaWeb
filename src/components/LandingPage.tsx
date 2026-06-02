@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  ArrowRight,
   BookOpen,
   Download,
   ExternalLink,
@@ -648,13 +647,15 @@ export function LandingPage() {
               Watch Demo
               <ExternalLink className="h-4 w-4" aria-hidden />
             </a>
-            <Link
-              href="/docs"
+            <a
+              href="https://github.com/ogsamrat/PixaWeb/"
+              target="_blank"
+              rel="noreferrer"
               className="chrome-button inline-flex h-14 items-center justify-center gap-3 rounded-sm px-7 text-sm font-medium uppercase"
             >
-              Open Docs
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
+              Source Code
+              <ExternalLink className="h-4 w-4" aria-hidden />
+            </a>
           </div>
         </div>
       </section>
