@@ -15,7 +15,7 @@ const nav = [
 
 export function DocsSidebar() {
   return (
-    <aside className="sticky top-0 z-40 border-b border-white/10 bg-pixa-black/[0.92] backdrop-blur-xl lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
+    <aside className="sticky top-0 z-40 border-b border-white/10 bg-pixa-black/[0.92] backdrop-blur-xl lg:fixed lg:bottom-0 lg:left-0 lg:top-0 lg:w-72 lg:border-b-0 lg:border-r">
       <div className="flex h-full flex-col gap-4 px-4 py-4 sm:px-6 lg:gap-8 lg:px-5 lg:py-6 xl:px-8">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" aria-label="Pixa home" className="block w-24 shrink-0 sm:w-28 lg:w-32">
