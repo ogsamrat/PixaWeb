@@ -5,15 +5,15 @@ type DiagramPanelProps = {
 
 export function DiagramPanel({ title, nodes }: DiagramPanelProps) {
   return (
-    <div className="edge-frame border border-white/12 bg-white/[0.02] p-6">
+    <div className="edge-frame border border-white/12 bg-white/[0.02] p-4 sm:p-6">
       <p className="section-kicker">{title}</p>
-      <div className="mt-7 grid gap-3 md:grid-cols-3">
+      <div className="mt-5 grid gap-3 sm:mt-7 md:grid-cols-3">
         {nodes.map((node, index) => (
           <div key={node} className="relative border border-white/10 p-4">
             <span className="display-type text-xs text-pixa-muted">
               0{index + 1}
             </span>
-            <p className="display-type mt-5 text-2xl uppercase leading-tight text-pixa-white">
+            <p className="display-type mt-4 text-xl uppercase leading-tight text-pixa-white sm:mt-5 sm:text-2xl">
               {node}
             </p>
             {index < nodes.length - 1 ? (

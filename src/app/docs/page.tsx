@@ -43,8 +43,8 @@ tools = toolkit.get_tools()`;
 export default function DocsPage() {
   return (
     <DocsLayout>
-      <article className="mx-auto max-w-5xl">
-        <section id="overview" className="scroll-mt-10">
+      <article className="mx-auto w-full max-w-5xl min-w-0">
+        <section id="overview" className="scroll-mt-32 lg:scroll-mt-10">
           <p className="section-kicker">Documentation</p>
           <h1 className="chrome-text display-type docs-heading mt-6 text-balance">
             Pixa Wallet.
@@ -55,7 +55,7 @@ export default function DocsPage() {
             Claude Desktop or custom agent frameworks.
           </p>
           <div className="mt-9 flex flex-wrap gap-3 text-xs uppercase leading-none text-pixa-secondary">
-            {["Algorand Mainnet", "MCP Native", "x402 Supported", "MIT"].map(
+            {["Algorand Mainnet", "MCP Native", "x402 Supported", "GPL v3"].map(
               (badge) => (
                 <span key={badge} className="border border-white/12 px-4 py-2">
                   {badge}
@@ -185,30 +185,6 @@ export default function DocsPage() {
             ]}
           />
         </DocsSection>
-
-        <DocsSection id="roadmap" title="Roadmap" kicker="Status">
-          <div className="grid gap-4">
-            {[
-              [
-                "Now",
-                "Mainnet wallet operations, x402, Tinyman, NFD, MCP bundle.",
-              ],
-              ["Next", "UPI-to-USDC widget via Mudrex API."],
-              [
-                "Future",
-                "Non-custodial treasury, multi-sig, and multi-chain routing.",
-              ],
-            ].map(([phase, copy]) => (
-              <article
-                key={phase}
-                className="edge-frame border border-white/12 bg-white/[0.02] p-6"
-              >
-                <p className="section-kicker">{phase}</p>
-                <p className="mt-4 leading-8 text-pixa-secondary">{copy}</p>
-              </article>
-            ))}
-          </div>
-        </DocsSection>
       </article>
     </DocsLayout>
   );
@@ -226,12 +202,12 @@ function DocsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="mt-24 scroll-mt-8">
+    <section id={id} className="mt-16 scroll-mt-32 sm:mt-20 lg:mt-24 lg:scroll-mt-8">
       <p className="section-kicker">{kicker}</p>
-      <h2 className="display-type mt-4 text-4xl leading-tight text-pixa-white sm:text-5xl">
+      <h2 className="display-type mt-4 text-3xl leading-tight text-pixa-white sm:text-5xl">
         {title}
       </h2>
-      <div className="mt-7 space-y-6 text-base leading-8 text-pixa-secondary">
+      <div className="mt-6 space-y-5 text-sm leading-7 text-pixa-secondary sm:mt-7 sm:space-y-6 sm:text-base sm:leading-8">
         {children}
       </div>
     </section>
@@ -241,7 +217,7 @@ function DocsSection({
 function ToolGroup({ title, items }: { title: string; items: string[] }) {
   return (
     <article className="edge-frame border border-white/12 bg-white/[0.02] p-5">
-      <h3 className="display-type text-2xl leading-tight text-pixa-white">
+      <h3 className="display-type text-xl leading-tight text-pixa-white sm:text-2xl">
         {title}
       </h3>
       <div className="mt-5 grid gap-3">
