@@ -20,7 +20,7 @@
 
 The first agentic payment wallet built for Algorand, designed for MCP-native agents, x402 payments, and autonomous settlement.
 
-[Website](#run-locally) | [Docs](src/app/docs/page.tsx) | [MCP Bundle](public/assets/pixa.mcpb)
+[Website](https://pixawallet.xyz) | [Docs](src/app/docs/page.tsx) | [MCP Bundle](public/assets/pixa.mcpb)
 
 </div>
 

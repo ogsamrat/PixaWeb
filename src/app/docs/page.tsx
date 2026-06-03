@@ -8,6 +8,23 @@ export const metadata: Metadata = {
   title: "Docs | Pixa Wallet",
   description:
     "Install and use Pixa Wallet, the MCP-native agentic payment wallet for Algorand and x402.",
+  alternates: {
+    canonical: "/docs",
+  },
+  openGraph: {
+    title: "Docs | Pixa Wallet",
+    description:
+      "Install and use Pixa Wallet, the MCP-native agentic payment wallet for Algorand and x402.",
+    url: "https://pixawallet.xyz/docs",
+    images: [
+      {
+        url: "/assets/pixa-bg.png",
+        width: 1200,
+        height: 630,
+        alt: "Pixa Wallet documentation",
+      },
+    ],
+  },
 };
 
 const claudeConfig = `{
