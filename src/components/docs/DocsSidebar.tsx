@@ -12,6 +12,7 @@ const nav = [
   ["Security", "#security"],
   ["Algorand", "#algorand"],
   ["Repositories", "#repositories"],
+  ["Registry", "/registry"],
 ];
 
 export function DocsSidebar() {

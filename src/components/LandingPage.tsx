@@ -194,6 +194,12 @@ export function LandingPage() {
                   <Link className="transition hover:text-pixa-white" href="/docs">
                     Docs
                   </Link>
+                  <Link
+                    className="transition hover:text-pixa-white"
+                    href="/registry"
+                  >
+                    Registry
+                  </Link>
                 </div>
               </nav>
             </motion.header>
