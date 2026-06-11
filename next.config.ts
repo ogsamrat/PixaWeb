@@ -6,6 +6,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/docs",
+        destination: "https://celoref.mintlify.app/api-reference/introduction",
+        permanent: true,
+      },
+      {
+        source: "/docs/:path*",
+        destination: "https://celoref.mintlify.app/api-reference/introduction",
+        permanent: true,
+      },
+      {
         source: "/favicon.ico",
         destination: "/assets/favicon/favicon.ico",
         permanent: true,
